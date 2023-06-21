@@ -13,7 +13,7 @@ module.exports = {
   networks: {
     hardhat: {},
     sphinx: {
-      url: "https://sphinx.shardeum.org/",
+      url: "3",
       chainId: 8082,
       accounts: [`0x${PRIVATE_KEY}`],
     },
