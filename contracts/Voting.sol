@@ -1,64 +1,94 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 
-contract Voting {
-    struct Candidate {
-        string name;
-        uint256 voteCount;
+contract Voting{
+    //defining structure with multiple candidate variables
+    struct Candidate{
+        bool supported;
+        address id;
+        uint voteCount;
+        string candidateName;
     }
 
-    Candidate[] public candidates;
-    address owner;
-    mapping(address => bool) public voters;
+    event Registered( address candidateId, uint256 candidateNum, string candidateName);
+    event Supported ( address voter, address candidate);
+    event Voted( address voter, address candidate);
 
-    uint256 public votingStart;
-    uint256 public votingEnd;
+    //Giving ref using mapping
 
-constructor(string[] memory _candidateNames, uint256 _durationInMinutes) {
-    for (uint256 i = 0; i < _candidateNames.length; i++) {
-        candidates.push(Candidate({
-            name: _candidateNames[i],
-            voteCount: 0
-        }));
+    mapping( address => bool) public voters;
+
+    mapping (uint => Candidate) public candidates;
+
+    address ecadmin;
+
+    uint public candidatesCount;
+    uint256 public startTime;
+    uint256 public stopTime;
+
+
+    constructor(){
+        ecadmin = msg.sender;
     }
-    owner = msg.sender;
-    votingStart = block.timestamp;
-    votingEnd = block.timestamp + (_durationInMinutes * 1 minutes);
-}
 
-    modifier onlyOwner {
-        require(msg.sender == owner);
+    function addCandidate(string memory _name) public payable{
+        require(msg.value ==0.1 ether, "Appropraite ethere not exist");
+        //is candidate already registered.
+
+        candidatesCount++;
+        candidates[candidatesCount] = Candidate(false, msg.sender,0,_name);
+        emit Registered (msg.sender, candidatesCount, _name);
+
+    }
+
+    function supportCandidate(uint256 _candidateId) external {
+        require(candidates[_candidateId].id != address(0x00), "Not Registered");
+        require(candidates[_candidateId].id != msg.sender, "Self Support not allowed");
+        require(candidates[_candidateId].supported ==false, "Already supported" );
+        candidates[_candidateId].supported = true;
+
+        emit Supported(msg.sender, candidates[_candidateId].id);
+
+    }
+
+    modifier ecAdminOnly(){
+        require(msg.sender == ecadmin, "EC admin only operation");
         _;
     }
 
-    function addCandidate(string memory _name) public onlyOwner {
-        candidates.push(Candidate({
-                name: _name,
-                voteCount: 0
-        }));
+    function setStop(uint256 num) external ecAdminOnly{
+    require(num > block.timestamp && num > startTime, "Stop at later time");
+    stopTime = num;
     }
 
-    function vote(uint256 _candidateIndex) public {
-        require(!voters[msg.sender], "You have already voted.");
-        require(_candidateIndex < candidates.length, "Invalid candidate index.");
+    function setStart(uint256 num) external ecAdminOnly{
+    require(num >= block.timestamp, "Start at earlier time");
+    startTime = num;
+    }
 
-        candidates[_candidateIndex].voteCount++;
+    function vote(uint _candidateID) public{
+        require(block.timestamp > startTime, "Not in voting time");
+        require(block.timestamp <= stopTime, "Voting time over");
+        require(voters[msg.sender] == false, "Already voted");
+        require(candidates[_candidateID].id != address(0x00), "Not Registered");
+        require(candidates[_candidateID].supported == true, "Dont vote not supported");
+
         voters[msg.sender] = true;
+        candidates[_candidateID].voteCount++;
+        emit Voted(msg.sender, candidates[_candidateID].id);
     }
 
-    function getAllVotesOfCandiates() public view returns (Candidate[] memory){
-        return candidates;
+    function getResults() public view returns (Candidate memory candidate){
+        require(block.timestamp >= stopTime, "Voting time not over");
+        uint256 c;
+        uint256 max = 0;
+        for(uint i = 1; i <= candidatesCount; i++){
+            if(candidates[i].voteCount > max){
+                max = candidates[i].voteCount;
+                c = i;
+            }
+        }
+        return candidates[c];
     }
 
-    function getVotingStatus() public view returns (bool) {
-        return (block.timestamp >= votingStart && block.timestamp < votingEnd);
-    }
-
-    function getRemainingTime() public view returns (uint256) {
-        require(block.timestamp >= votingStart, "Voting has not started yet.");
-        if (block.timestamp >= votingEnd) {
-            return 0;
-    }
-        return votingEnd - block.timestamp;
-    }
-}
+}   

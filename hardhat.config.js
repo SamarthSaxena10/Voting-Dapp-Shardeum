@@ -13,13 +13,13 @@ module.exports = {
   networks: {
     hardhat: {},
     sphinx: {
-      url: "3",
-      chainId: 8082,
+      url: "https://dapps.shardeum.org/",
+      chainId: 8081,
       accounts: [`0x${PRIVATE_KEY}`],
     },
   },
   solidity: {
-    version: "0.8.9",
+    version: "0.8.17",
     settings: {
       optimizer: {
         enabled: true,
