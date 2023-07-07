@@ -12,12 +12,17 @@ After you cloned the repository, you want to install the packages using
 npm install
 ```
 
-You first need to compile the contract and upload it to the blockchain network. Run the following commands to compile and upload the contract.
+You first need to compile the contract :
 
 ```shell
 npx hardhat compile
-npx hardhat run --network volta scripts/deploy.js
 ```
+
+and upload it to the blockchain network. Run the following commands to compile and upload the contract.
+
+<!-- ```shell
+npx hardhat run scripts/deploy.js --network sphinx
+``` -->
 
 Once the contract is uploaded to the blockchain, copy the contract address and copy it in the .env file. You can also use another blockchain by writing the blockchain's endpoint in hardhat-config.
 
