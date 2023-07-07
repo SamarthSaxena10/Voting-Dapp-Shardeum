@@ -20,9 +20,9 @@ npx hardhat compile
 
 and upload it to the blockchain network. Run the following commands to compile and upload the contract.
 
-<!-- ```shell
+```shell
 npx hardhat run scripts/deploy.js --network sphinx
-``` -->
+```
 
 Once the contract is uploaded to the blockchain, copy the contract address and copy it in the .env file. You can also use another blockchain by writing the blockchain's endpoint in hardhat-config.
 
