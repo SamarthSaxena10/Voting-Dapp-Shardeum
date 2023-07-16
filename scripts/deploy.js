@@ -8,7 +8,7 @@ async function main() {
     ["Sam", "Lovneesh", "Greg", "Nishchal | Shardeum"],
     180
   );
-  console.log("Contract address:", Voting_.address);
+  console.log("Voting Dapp address :", Voting_.address);
 }
 
 main()
