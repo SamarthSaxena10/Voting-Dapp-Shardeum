@@ -2,6 +2,8 @@
 
 This is an overview of Voting Dapp on Shardeum.
 
+![Image](https://iili.io/HL7p4CQ.png)
+
 Here's the link for Deployment --> [Video Link](https://www.loom.com/share/1cb0bab1a2454708ac935c37c1dfad62?sid=03165bd4-fe1b-4397-808b-282db36a2a38)
 
 ## Tech Stack
